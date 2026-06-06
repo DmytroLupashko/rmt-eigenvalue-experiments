@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import uuid
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -14,6 +15,8 @@ class SimulationConfig:
     p_func:     PFunc
     epsilon:    float
     batch_size: int  = 10
+    run_id:     str = field(default_factory=lambda: str(uuid.uuid4()))
+    sweep_tag:  str = ""
 
     @property
     def p(self) -> float:

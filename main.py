@@ -18,7 +18,7 @@ def power_scaling(beta: float) -> Callable[[int], float]:
 
 # Entry point
 if __name__ == "__main__":
-    n_values = range(100, 200, 5)
+    n_values = range(100, 130, 5)
     results  = []
 
     for n in n_values:
@@ -27,9 +27,10 @@ if __name__ == "__main__":
             p_func     = power_scaling(1/2),
             epsilon    = 0.005,
             batch_size = 5000,
+            sweep_tag  = "power_0.5_test"
         )
 
-        print(f"Launching simulation p_func={config.p_func.__name__}  n={config.n}  p={config.p:.5f}  ε={config.epsilon}")
+        print(f"Launching simulation  sweep={config.sweep_tag}  n={config.n}")
 
         result = EigenvalueSimulator(config).run(
             log_to=Path("./data/simulation_results.csv"),
