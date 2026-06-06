@@ -44,17 +44,14 @@ class EigenvalueSimulator:
             Path to the CSV file. Pass None to skip logging.
         """
         cfg = self.config
-        print(f"Launching simulation  n={cfg.n}  p={cfg.p:.5f}  ε={cfg.epsilon}")
 
         start   = time.perf_counter()
         samples: tuple[float, ...] = ()
 
         while not has_converged(samples, cfg.epsilon):
             samples = samples + tuple(self._collect_batch())
-            print(f"  samples={len(samples):4d}  std_error={std_error_of(samples):.6f}")
 
         elapsed = time.perf_counter() - start
-        print(f"Converged after {len(samples)} samples ({elapsed:.1f}s)")
 
         result = SimulationResult(
             config          = cfg,
@@ -66,6 +63,5 @@ class EigenvalueSimulator:
 
         if log_to is not None:
             log_result(result, path=log_to)
-            print(f"Result logged → {log_to.resolve()}")
 
         return result
