@@ -18,19 +18,23 @@ def power_scaling(beta: float) -> Callable[[int], float]:
 
 # Entry point
 if __name__ == "__main__":
-    config = SimulationConfig(
-        n          = 100,
-        p_func     = power_scaling(1/2),
-        epsilon    = 0.005,
-        batch_size = 10,
-    )
+    n_values = range(100, 200, 5)
+    results  = []
 
-    result = EigenvalueSimulator(config).run(
-        log_to=Path("./data/simulation_results.csv"),
-    )
+    for n in n_values:
+        config = SimulationConfig(
+            n          = n,
+            p_func     = power_scaling(1/2),
+            epsilon    = 0.005,
+            batch_size = 5000,
+        )
 
-    print(
-        f"\nFinal result : {result.mean_eigenvalue:.4f}"
-        f"  ±{result.std_error:.4f}"
-        f"  ({result.samples} samples, {result.elapsed_seconds:.1f}s)"
-    )
+        print(f"Launching simulation p_func={config.p_func.__name__}  n={config.n}  p={config.p:.5f}  ε={config.epsilon}")
+
+        result = EigenvalueSimulator(config).run(
+            log_to=Path("./data/simulation_results.csv"),
+        )
+
+        results.append(result)
+
+    print("Finished simulation!")
