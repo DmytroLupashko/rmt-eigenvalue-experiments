@@ -1,6 +1,8 @@
 import time
 from pathlib import Path
 
+from concurrent.futures import ProcessPoolExecutor
+
 import numpy as np
 
 from .core.sampling import sample_largest_eigenvalue, std_error_of, has_converged
@@ -20,11 +22,17 @@ class EigenvalueSimulator:
         self.config = config
 
     def _collect_batch(self) -> list[float]:
-        """Draw batch_size independent eigenvalue samples and return them as a list."""
-        return [
-            sample_largest_eigenvalue(self.config.n, self.config.p)
-            for _ in range(self.config.batch_size)
-        ]
+        """
+        Draw batch_size independent eigenvalue samples in parallel using
+        ProcessPoolExecutor. Each worker process runs sample_largest_eigenvalue
+        independently, bypassing the GIL for true CPU-level parallelism.
+        """
+        with ProcessPoolExecutor() as executor:
+            futures = [
+                executor.submit(sample_largest_eigenvalue, self.config.n, self.config.p)
+                for _ in range(self.config.batch_size)
+            ]
+            return [f.result() for f in futures]
 
     def run(self, log_to: Path | None = LOG_PATH) -> SimulationResult:
         """
