@@ -3,6 +3,8 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+import numpy as np
+
 from ..config import SimulationResult
 
 LOG_PATH = Path(__file__).parent.parent.parent / "data" / "simulation_results.csv"
@@ -14,6 +16,7 @@ _CSV_HEADER = [
     "n",
     "mean_eigenvalue",
     "epsilon",
+    "samples_size",
     "_batch_size",
     "_elapsed_time",
     "_timestamp",
@@ -36,8 +39,15 @@ def log_result(result: SimulationResult, path: Path = LOG_PATH) -> None:
     Columns: run_id, sweep_tag, p_func, n, mean_eigenvalue, epsilon,
              _batch_size, _elapsed_time, _timestamp, _std_error.
     """
+
     _ensure_log_header(path)
     cfg = result.config
+
+    # Save samples to separate .npy file
+    samples_dir = path.parent / "samples"
+    samples_dir.mkdir(parents=True, exist_ok=True)
+    np.save(samples_dir / f"{cfg.run_id}.npy", np.array(result.samples))
+
     row = [
         cfg.run_id,
         cfg.sweep_tag,
@@ -45,7 +55,8 @@ def log_result(result: SimulationResult, path: Path = LOG_PATH) -> None:
         cfg.n,
         f"{result.mean_eigenvalue:.6f}",
         cfg.epsilon,
-        result.samples,
+        result.samples_size,
+        cfg.batch_size,
         f"{result.elapsed_seconds:.2f}",
         result.timestamp.isoformat(timespec="seconds"),
         f"{result.std_error:.6f}",
