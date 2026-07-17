@@ -36,7 +36,9 @@ class EigenvalueSimulator:
         independently, bypassing the GIL for true CPU-level parallelism.
         """
         futures = [
-            self._executor.submit(sample_largest_eigenvalue, self.config.n, self.config.p)
+            self._executor.submit(
+                sample_largest_eigenvalue, self.config.n, self.config.ensemble
+            )
             for _ in range(self.config.batch_size)
         ]
         return [f.result() for f in futures]

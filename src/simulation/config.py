@@ -5,6 +5,8 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Callable
 
+from .core.ensemble import MatrixEnsemble
+
 PFunc = Callable[[int], float]
 
 
@@ -13,18 +15,12 @@ class SimulationConfig:
     """All parameters that define a single simulation run. Immutable by design."""
 
     n: int
-    p_func: PFunc
+    ensemble: MatrixEnsemble
     epsilon: float
     min_samples: int
     batch_size: int = 1000
     run_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     sweep_tag: str = ""
-
-    @property
-    def p(self) -> float:
-        """Edge probability derived from the scaling function."""
-        return self.p_func(self.n) / self.n
-
 
 @dataclass(frozen=True)
 class SimulationResult:

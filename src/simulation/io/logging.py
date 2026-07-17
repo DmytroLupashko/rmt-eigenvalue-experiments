@@ -12,7 +12,7 @@ LOG_PATH = Path(__file__).parent.parent.parent / "data" / "simulation_results.cs
 _CSV_HEADER = [
     "run_id",
     "sweep_tag",
-    "p_func",
+    "ensemble",
     "n",
     "mean_eigenvalue",
     "epsilon",
@@ -51,7 +51,7 @@ def log_result(result: SimulationResult, path: Path = LOG_PATH) -> None:
     row = [
         cfg.run_id,
         cfg.sweep_tag,
-        cfg.p_func.__name__,
+        cfg.ensemble.name,
         cfg.n,
         f"{result.mean_eigenvalue:.6f}",
         cfg.epsilon,
